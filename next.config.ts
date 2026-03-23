@@ -1,7 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['*'],
+  // Allow preview subdomains for Keystone preview system
+  allowedDevOrigins: [
+    "preview.localhost",
+    "*.preview.localhost",
+    "preview.jboxai.com",
+    "*.preview.jboxai.com",
+  ],
   images: {
     remotePatterns: [
       {
