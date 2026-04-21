@@ -1,3 +1,9 @@
+/**
+ * Next.js Configuration
+ *
+ * The withNextIntl plugin wraps the config to enable next-intl features.
+ * It points to ./i18n/request.ts for server-side message loading.
+ */
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 

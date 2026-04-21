@@ -1,6 +1,14 @@
+/**
+ * Home Page
+ *
+ * To use i18n translations in a client component:
+ *   1. Add keys to messages/en.json (e.g., "home": { "heading": "Welcome" })
+ *   2. Import useTranslations from 'next-intl'
+ *   3. Call const t = useTranslations('home')
+ *   4. Render with {t('heading')} — it reads the value from the active locale's messages
+ */
 'use client'
 
-import { useTranslations } from 'next-intl'
 import { motion } from 'framer-motion'
 
 function SkeletonBlock({ className }: { className?: string }) {
@@ -14,34 +22,24 @@ function SkeletonBlock({ className }: { className?: string }) {
   )
 }
 
-function Card({
-  title,
-  description,
-  body,
-  cta,
-}: {
-  title: string
-  description: string
-  body: string
-  cta: string
-}) {
+function SkeletonCard() {
   return (
     <div className="rounded-xl border bg-card p-6 space-y-4">
-      <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
-      <p className="text-sm leading-relaxed">{body}</p>
+      <SkeletonBlock className="h-5 w-2/5" />
+      <SkeletonBlock className="h-3 w-3/5" />
+      <div className="space-y-2 pt-2">
+        <SkeletonBlock className="h-3 w-full" />
+        <SkeletonBlock className="h-3 w-4/5" />
+        <SkeletonBlock className="h-3 w-3/5" />
+      </div>
       <div className="pt-2">
-        <button className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">
-          {cta}
-        </button>
+        <SkeletonBlock className="h-8 w-20 rounded-md" />
       </div>
     </div>
   )
 }
 
 export default function Page() {
-  const t = useTranslations('home')
-
   return (
     <div className="min-h-screen p-6 md:p-12 flex flex-col items-center gap-10 bg-background">
       <motion.div
@@ -50,41 +48,16 @@ export default function Page() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-3xl font-bold">{t('heading')}</h1>
-        <p className="text-muted-foreground">{t('subtitle')}</p>
+        <SkeletonBlock className="h-9 w-56 mx-auto" />
+        <SkeletonBlock className="h-5 w-40 mx-auto" />
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl w-full">
-        <Card
-          title={t('card.title')}
-          description={t('card.description')}
-          body={t('card.body')}
-          cta={t('card.cta')}
-        />
-        <div className="space-y-6">
-          <SkeletonBlock className="h-5 w-2/5" />
-          <SkeletonBlock className="h-3 w-3/5" />
-          <div className="space-y-2 pt-2">
-            <SkeletonBlock className="h-3 w-full" />
-            <SkeletonBlock className="h-3 w-4/5" />
-          </div>
-        </div>
-        <div className="space-y-6">
-          <SkeletonBlock className="h-5 w-2/5" />
-          <SkeletonBlock className="h-3 w-3/5" />
-          <div className="space-y-2 pt-2">
-            <SkeletonBlock className="h-3 w-full" />
-            <SkeletonBlock className="h-3 w-4/5" />
-          </div>
-        </div>
-        <div className="space-y-6">
-          <SkeletonBlock className="h-5 w-2/5" />
-          <SkeletonBlock className="h-3 w-3/5" />
-          <div className="space-y-2 pt-2">
-            <SkeletonBlock className="h-3 w-full" />
-            <SkeletonBlock className="h-3 w-4/5" />
-          </div>
-        </div>
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     </div>
   )
