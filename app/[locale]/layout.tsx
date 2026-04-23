@@ -1,34 +1,23 @@
 /**
  * Locale Layout
  *
- * The main layout that wraps all pages under a specific locale (e.g., /en).
- * This is where the <html> lang attribute, fonts, and global providers live.
+ * Wraps all pages under a specific locale (e.g., /en) with the
+ * NextIntlClientProvider so client components can access translations.
  *
  * Key responsibilities:
  *   - Validates the locale from the URL segment against supported locales
  *   - Sets the request locale for server-side translations
- *   - Wraps the app in NextIntlClientProvider for client-side translations
+ *   - Wraps children in NextIntlClientProvider for client-side translations
  *   - Generates static params for all supported locales (SSG)
+ *
+ * Note: <html> and <body> tags live in the root layout (app/layout.tsx).
+ * This layout only adds the i18n provider layer.
  */
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
-import { Geist, Geist_Mono, Inter } from 'next/font/google'
 import { routing } from '@/i18n/routing'
-import '../globals.css'
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
-
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-})
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-})
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -61,15 +50,9 @@ export default async function LocaleLayout({
   const messages = await getMessages()
 
   return (
-    <html lang={locale} className={inter.variable}>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {/* Provides translations to all client components via useTranslations() */}
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    // Provides translations to all client components via useTranslations()
+    <NextIntlClientProvider messages={messages}>
+      {children}
+    </NextIntlClientProvider>
   )
 }
