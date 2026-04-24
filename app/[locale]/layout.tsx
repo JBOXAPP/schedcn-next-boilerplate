@@ -11,13 +11,14 @@
  *   - Generates static params for all supported locales (SSG)
  *
  * Note: <html> and <body> tags live in the root layout (app/layout.tsx).
- * This layout only adds the i18n provider layer.
+ * This layout adds the i18n provider and React Query provider layers.
  */
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages, setRequestLocale } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { QueryProvider } from '@/components/providers/query-provider'
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -52,7 +53,10 @@ export default async function LocaleLayout({
   return (
     // Provides translations to all client components via useTranslations()
     <NextIntlClientProvider messages={messages}>
-      {children}
+      {/* Provides React Query to all client components via useQuery/useMutation */}
+      <QueryProvider>
+        {children}
+      </QueryProvider>
     </NextIntlClientProvider>
   )
 }

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-JBOX Next.js boilerplate using **Next.js 16** (App Router), **React 19**, **TypeScript 5**, **Tailwind CSS 4**, and **shadcn/ui** (radix-vega style). Package manager is **bun**.
+JBOX Next.js boilerplate using **Next.js 16** (App Router), **React 19**, **TypeScript 5**, **Tailwind CSS 4**, **shadcn/ui** (radix-vega style), **next-intl** (i18n), and **TanStack React Query**. Package manager is **bun**.
 
 There is no test framework configured. No test runner, no test files exist. If tests are added in the future, configure vitest or jest and update this section.
 
@@ -71,14 +71,26 @@ bunx tsc --noEmit    # Run TypeScript type checking
 ### File Organization
 
 ```
-app/                  # Next.js App Router pages and layouts
-  globals.css         # Tailwind imports + CSS custom properties (theme)
-  layout.tsx          # Root layout
-  page.tsx            # Home page
+app/                          # Next.js App Router pages and layouts
+  layout.tsx                  # Root layout (<html>, <body>, fonts, globals.css)
+  globals.css                 # Tailwind imports + CSS custom properties (theme)
+  [locale]/                   # Locale-aware routes (i18n)
+    layout.tsx                # NextIntlClientProvider + QueryProvider wrappers
+    page.tsx                  # Home page
 components/
-  ui/                 # shadcn/ui components (do not modify manually — use shadcn CLI)
+  ui/                         # shadcn/ui components (do not modify manually — use shadcn CLI)
+  providers/                  # Client-side context providers
+    query-provider.tsx        # React Query QueryClientProvider
+i18n/
+  routing.ts                  # Locale config (locales list, defaultLocale)
+  request.ts                  # Server-side message loading for current request
+  navigation.ts               # Locale-aware Link, useRouter, redirect, getPathname
 lib/
-  utils.ts            # cn() utility (clsx + tailwind-merge)
+  utils.ts                    # cn() utility (clsx + tailwind-merge)
+  query-client.ts             # Shared QueryClient singleton
+messages/
+  en.json                     # English translation keys (JSON — no comments allowed)
+middleware.ts → proxy.ts       # Locale detection + redirects (Next.js 16 proxy convention)
 ```
 
 ### Adding shadcn/ui Components
@@ -95,6 +107,8 @@ Do not manually create files in `components/ui/` — always use the CLI. The sty
 
 | Library | Purpose |
 |---|---|
+| `next-intl` | Internationalization (locale routing, translations, navigation) |
+| `@tanstack/react-query` | Server state management (data fetching, caching, mutations) |
 | `radix-ui` | Headless UI primitives (shadcn foundation) |
 | `@base-ui/react` | Additional headless UI primitives |
 | `class-variance-authority` | Component variant definitions |
@@ -108,6 +122,33 @@ Do not manually create files in `components/ui/` — always use the CLI. The sty
 - No project-specific error handling patterns are established yet.
 - Follow Next.js conventions: use `error.tsx` boundary files for route-level error handling.
 - Use `not-found.tsx` for 404 handling.
+
+### Internationalization (next-intl)
+
+- Locales are defined in `i18n/routing.ts`. Default locale is `en`.
+- To add a new language: add the locale code to `routing.locales`, create `messages/<locale>.json`, update `proxy.ts` matcher.
+- Translation files are JSON (`messages/en.json`) — **no comments allowed** in JSON files.
+- Use `useTranslations('<namespace>')` in client components: `const t = useTranslations('home')` then `{t('heading')}`.
+- Use locale-aware navigation from `@/i18n/navigation` instead of `next/link` or `next/navigation`:
+  ```ts
+  import { Link, useRouter, redirect, usePathname, getPathname } from '@/i18n/navigation'
+  ```
+- The proxy (`proxy.ts`, formerly `middleware.ts`) handles locale detection and redirects. Do NOT rename it back to `middleware.ts` — Next.js 16 uses the `proxy` convention.
+- Root layout (`app/layout.tsx`) owns `<html>` and `<body>` tags. The `[locale]` layout only adds providers.
+
+### React Query (@tanstack/react-query)
+
+- The shared `QueryClient` is created in `lib/query-client.ts` (singleton pattern, HMR-safe).
+- Default options: `staleTime: 5min`, `gcTime: 30min`. Override per-query as needed.
+- `QueryProvider` wraps the app in `components/providers/query-provider.tsx`.
+- Use `useQuery` for reads, `useMutation` for writes:
+  ```ts
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: () => fetch('/api/todos').then(r => r.json()),
+  })
+  ```
+- `queryKey` uniquely identifies a query in the cache — use descriptive arrays like `['users', id]`.
 
 ### Naming Conventions
 
