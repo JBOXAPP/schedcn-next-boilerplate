@@ -9,6 +9,7 @@
  * Locale-specific logic (providers, lang attribute) lives in [locale]/layout.tsx.
  */
 import { Geist, Geist_Mono, Inter } from "next/font/google"
+import Script from "next/script"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
@@ -34,6 +35,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        {/* JBOX devtools — auto-activates only when embedded in JBOX iframe */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (window.parent !== window) {
+                var s = document.createElement('script');
+                s.src = '/jbox-devtools.js';
+                s.async = true;
+                document.head.appendChild(s);
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   )
