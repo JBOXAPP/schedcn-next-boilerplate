@@ -35,19 +35,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
-        {/* JBOX devtools — auto-activates only when embedded in JBOX iframe */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (window.parent !== window) {
-                var s = document.createElement('script');
-                s.src = '/jbox-devtools.js';
-                s.async = true;
-                document.head.appendChild(s);
-              }
-            `,
-          }}
-        />
+        <Script src="/jbox-devtools.js" strategy="afterInteractive" />
       </body>
     </html>
   )
