@@ -1,13 +1,4 @@
-/**
- * Next.js Configuration
- *
- * The withNextIntl plugin wraps the config to enable next-intl features.
- * It points to ./i18n/request.ts for server-side message loading.
- */
 import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
-
-const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   // Allow preview subdomains for Keystone preview system
@@ -28,4 +19,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withNextIntl(nextConfig);
+export default nextConfig;
