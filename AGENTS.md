@@ -2,158 +2,123 @@
 
 ## Project Overview
 
-JBOX Next.js boilerplate using **Next.js 16** (App Router), **React 19**, **TypeScript 5**, **Tailwind CSS 4**, **shadcn/ui** (radix-vega style), **next-intl** (i18n), and **TanStack React Query**. Package manager is **bun**.
+JBOX Next.js boilerplate using **Next.js 16** (App Router), **React 19**, **TypeScript 5**, **Tailwind CSS 4**, and **shadcn/ui** primitives. The current route surface is intentionally minimal: a root layout and a root page only.
 
-There is no test framework configured. No test runner, no test files exist. If tests are added in the future, configure vitest or jest and update this section.
+Installed packages still include **next-intl** and **TanStack React Query**, but they are not wired into the active route tree right now. Treat them as optional scaffolding unless the user explicitly wants them re-enabled.
 
-## Type Checking
+There is no test framework configured. No test runner or test files exist.
+
+## Build And Type Check
 
 ```bash
-bunx tsc --noEmit    # Run TypeScript type checking
+bun run build
+bunx tsc --noEmit
 ```
+
+`npm run build` also works, but the repo is currently set up around `bun.lock`.
+
+## Current App Structure
+
+```text
+app/
+  favicon.ico
+  globals.css
+  layout.tsx
+  page.tsx
+components/
+  providers/
+    query-provider.tsx
+  ui/
+i18n/
+  navigation.ts
+  request.ts
+  routing.ts
+lib/
+  query-client.ts
+  utils.ts
+messages/
+  en.json
+```
+
+## Routing Baseline
+
+- The active App Router entrypoints are `app/layout.tsx` and `app/page.tsx`.
+- `app/page.tsx` currently returns `null` on purpose. This is the minimum passing App Router setup for this boilerplate.
+- There is no active `proxy.ts`.
+- There is no active `[locale]` route segment.
+- If you add routing back, keep the root layout as the owner of `<html>` and `<body>`.
+
+## Optional Scaffolding
+
+- `i18n/` and `messages/` still exist, but locale routing is not active.
+- `components/providers/query-provider.tsx` and `lib/query-client.ts` still exist, but React Query is not mounted in the root layout.
+- Keep this distinction clear: installed code or helper files do not imply active runtime behavior.
 
 ## Code Style
 
 ### TypeScript
 
-- **Strict mode** is enabled (`strict: true` in tsconfig.json).
-- Target: ES2017, module: esnext, moduleResolution: bundler.
-- Use `React.ComponentProps<"element">` for component prop types (not manual interface definitions) — see existing UI components.
-- Avoid explicit `interface` for props; use inline types or `React.ComponentProps` intersections.
-- Use `type` imports when importing types: `import type { ... }`.
+- `strict: true` is enabled.
+- Use `type` imports when importing types.
+- Prefer inline prop types or `React.ComponentProps` patterns used by the existing UI components.
 
 ### Imports
 
-- Use `@/*` path alias for all project-local imports (maps to project root).
-- React is imported as `import * as React from "react"`.
-- Utility imports: `import { cn } from "@/lib/utils"`.
-- UI component imports: `import { Button } from "@/components/ui/button"`.
-- Group imports: React first, then third-party libraries, then local `@/` imports, separated by blank lines.
+- Use the `@/*` path alias for project-local imports.
+- Group imports as: framework, third-party, then local imports.
 
 ### Formatting
 
-- No Prettier config is present. Follow existing file formatting.
-- 2-space indentation.
-- Single quotes for strings in `.ts`/`.tsx` files (enforced by existing patterns).
-- No semicolons at end of statements (matching existing code style).
-- No trailing commas (matching existing code style).
+- Follow the existing file formatting in the repo.
+- Use 2-space indentation.
+- Use single quotes in `.ts` and `.tsx` files where the surrounding file already follows that style.
+- Avoid semicolon churn unless the file already uses semicolons consistently.
 
 ### React Components
 
-- **Function declarations** (not arrow functions) for components: `function Button({ ... }) { ... }`.
-- Use `data-slot` attributes on root elements of UI components for identification.
-- Destructure props inline in function parameters.
-- Always spread remaining props (`...props`) onto the root element.
-- Accept `className` as a prop and merge with `cn()`.
-- Export components as named exports at the bottom of the file: `export { Button, buttonVariants }`.
-- shadcn/ui components use `cva` from class-variance-authority for variants.
-
-### Client vs Server Components
-
-- Default to **Server Components** (no `"use client"` directive).
-- Only add `"use client"` when the component uses hooks, browser APIs, event handlers, or client-side libraries (e.g., framer-motion).
-- RSC is enabled in `components.json` (`"rsc": true`).
+- Default to Server Components.
+- Add `'use client'` only when hooks, browser APIs, event handlers, or client-only libraries require it.
+- Keep components simple and local until reuse is real.
 
 ### Tailwind CSS
 
-- Tailwind v4 with `@tailwindcss/postcss` plugin.
-- Use CSS variable-based theming: `bg-card`, `text-muted-foreground`, `border-input`, etc.
-- Use `cn()` from `@/lib/utils` to merge Tailwind classes (handles conflicts via tailwind-merge).
-- All color/theme tokens are defined as CSS custom properties in `app/globals.css` using oklch colors.
-- Both light and dark mode themes are defined (`:root` and `.dark`).
+- Tailwind v4 is configured through `app/globals.css`.
+- Theme tokens are defined as CSS custom properties there.
+- Use `cn()` from `@/lib/utils` when merging utility classes.
 
-### ESLint Rules
+## shadcn/ui
 
-- `@typescript-eslint/no-unused-vars`: warn, with `_` prefix ignore pattern for both args and vars.
-- `@next/next/no-img-element`: error — always use `next/image` instead of `<img>`.
-- `react/no-unescaped-entities`: off.
-
-### File Organization
-
-```
-app/                          # Next.js App Router pages and layouts
-  layout.tsx                  # Root layout (<html>, <body>, fonts, globals.css)
-  globals.css                 # Tailwind imports + CSS custom properties (theme)
-  [locale]/                   # Locale-aware routes (i18n)
-    layout.tsx                # NextIntlClientProvider + QueryProvider wrappers
-    page.tsx                  # Home page
-components/
-  ui/                         # shadcn/ui components (do not modify manually — use shadcn CLI)
-  providers/                  # Client-side context providers
-    query-provider.tsx        # React Query QueryClientProvider
-i18n/
-  routing.ts                  # Locale config (locales list, defaultLocale)
-  request.ts                  # Server-side message loading for current request
-  navigation.ts               # Locale-aware Link, useRouter, redirect, getPathname
-lib/
-  utils.ts                    # cn() utility (clsx + tailwind-merge)
-  query-client.ts             # Shared QueryClient singleton
-messages/
-  en.json                     # English translation keys (JSON — no comments allowed)
-middleware.ts → proxy.ts       # Locale detection + redirects (Next.js 16 proxy convention)
-```
-
-### Adding shadcn/ui Components
-
-Use the shadcn CLI to add new UI components:
+- Use the shadcn CLI to add new UI components:
 
 ```bash
 bunx shadcn add <component-name>
 ```
 
-Do not manually create files in `components/ui/` — always use the CLI. The style is `radix-vega` with `lucide` icons.
+- Do not hand-roll files into `components/ui/` when a shadcn generator exists for that component.
 
-### Key Libraries
+## Libraries In Use
 
 | Library | Purpose |
 |---|---|
-| `next-intl` | Internationalization (locale routing, translations, navigation) |
-| `@tanstack/react-query` | Server state management (data fetching, caching, mutations) |
-| `radix-ui` | Headless UI primitives (shadcn foundation) |
-| `@base-ui/react` | Additional headless UI primitives |
-| `class-variance-authority` | Component variant definitions |
-| `clsx` + `tailwind-merge` | Class name composition via `cn()` |
-| `lucide-react` | Icon library |
+| `next` | App Router framework |
+| `tailwindcss` | Styling system |
+| `radix-ui`, `@base-ui/react` | Headless UI primitives |
+| `class-variance-authority` | Variant definitions |
+| `clsx` + `tailwind-merge` | Class composition via `cn()` |
+| `lucide-react` | Icons |
 | `tw-animate-css` | Tailwind animation utilities |
-| `framer-motion` | Animation library (client-side only) |
+| `framer-motion` | Client-side animation when needed |
 
-### Error Handling
+## React Query And i18n Guidance
 
-- No project-specific error handling patterns are established yet.
-- Follow Next.js conventions: use `error.tsx` boundary files for route-level error handling.
-- Use `not-found.tsx` for 404 handling.
+- Do not assume React Query or `next-intl` are active just because packages and helper files exist.
+- If you re-enable React Query, mount `QueryProvider` deliberately in `app/layout.tsx` or a nested route layout.
+- If you re-enable i18n routing, add the route structure and runtime wiring explicitly instead of assuming the leftover `i18n/` files are enough.
 
-### Internationalization (next-intl)
+## Naming Conventions
 
-- Locales are defined in `i18n/routing.ts`. Default locale is `en`.
-- To add a new language: add the locale code to `routing.locales`, create `messages/<locale>.json`, update `proxy.ts` matcher.
-- Translation files are JSON (`messages/en.json`) — **no comments allowed** in JSON files.
-- Use `useTranslations('<namespace>')` in client components: `const t = useTranslations('home')` then `{t('heading')}`.
-- Use locale-aware navigation from `@/i18n/navigation` instead of `next/link` or `next/navigation`:
-  ```ts
-  import { Link, useRouter, redirect, usePathname, getPathname } from '@/i18n/navigation'
-  ```
-- The proxy (`proxy.ts`, formerly `middleware.ts`) handles locale detection and redirects. Do NOT rename it back to `middleware.ts` — Next.js 16 uses the `proxy` convention.
-- Root layout (`app/layout.tsx`) owns `<html>` and `<body>` tags. The `[locale]` layout only adds providers.
-
-### React Query (@tanstack/react-query)
-
-- The shared `QueryClient` is created in `lib/query-client.ts` (singleton pattern, HMR-safe).
-- Default options: `staleTime: 5min`, `gcTime: 30min`. Override per-query as needed.
-- `QueryProvider` wraps the app in `components/providers/query-provider.tsx`.
-- Use `useQuery` for reads, `useMutation` for writes:
-  ```ts
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['todos'],
-    queryFn: () => fetch('/api/todos').then(r => r.json()),
-  })
-  ```
-- `queryKey` uniquely identifies a query in the cache — use descriptive arrays like `['users', id]`.
-
-### Naming Conventions
-
-- Files: `kebab-case.tsx` (e.g., `alert-dialog.tsx`, `input-group.tsx`).
-- Components: PascalCase exports (e.g., `CardHeader`, `SelectTrigger`).
-- Utility functions: camelCase (e.g., `cn`).
-- CSS custom properties: `kebab-case` (e.g., `--card-foreground`, `--radius-md`).
-- Data attributes: `kebab-case` with `data-slot` pattern (e.g., `data-slot="card-header"`).
+- Files: `kebab-case.tsx`
+- Components: PascalCase
+- Utilities: camelCase
+- CSS custom properties: `kebab-case`
+- Data attributes: `data-slot="..."`
