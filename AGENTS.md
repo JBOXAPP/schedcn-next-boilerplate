@@ -47,6 +47,7 @@ messages/
 - There is no active `proxy.ts`.
 - There is no active `[locale]` route segment.
 - If you add routing back, keep the root layout as the owner of `<html>` and `<body>`.
+- Keep the `next/script` include for `/jbox-devtools.js` in `app/layout.tsx`. It is required for JBOX preview/devtools integration and should not be removed during minimalization.
 
 ## Optional Scaffolding
 
