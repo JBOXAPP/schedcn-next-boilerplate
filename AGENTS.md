@@ -23,6 +23,9 @@ bunx tsc --noEmit
 app/
   favicon.ico
   globals.css
+  jbox-preview/
+    auth/
+      page.tsx
   layout.tsx
   page.tsx
 components/
@@ -34,6 +37,7 @@ i18n/
   request.ts
   routing.ts
 lib/
+  jbox-preview.ts
   query-client.ts
   utils.ts
 messages/
@@ -48,6 +52,7 @@ messages/
 - There is no active `[locale]` route segment.
 - If you add routing back, keep the root layout as the owner of `<html>` and `<body>`.
 - Keep the `next/script` include for `/jbox-devtools.js` in `app/layout.tsx`. It is required for JBOX preview/devtools integration and should not be removed during minimalization.
+- JBOX preview runs generated apps on same-site preview domains. Keep auth real and production-strict; do not add preview-only auth bypass routes unless a product explicitly needs one.
 
 ## Optional Scaffolding
 
