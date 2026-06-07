@@ -2,9 +2,9 @@
 
 ## Project Overview
 
-JBOX Next.js boilerplate using **Next.js 16** (App Router), **React 19**, **TypeScript 5**, **Tailwind CSS 4**, and **shadcn/ui** primitives. The current route surface is intentionally minimal: a root layout and a root page only.
+JBOX Next.js boilerplate using **Next.js 16** (App Router), **React 19**, **TypeScript 5**, **Tailwind CSS 4**, and **shadcn/ui** primitives. The current route surface is intentionally minimal: a root layout and one empty `/design-system` page only.
 
-Installed packages still include **next-intl** and **TanStack React Query**, but they are not wired into the active route tree right now. Treat them as optional scaffolding unless the user explicitly wants them re-enabled.
+Installed packages still include **next-intl**, **TanStack React Query**, and the Supabase client packages, but they are not wired into the active route tree right now. Treat them as optional scaffolding unless the user explicitly wants them re-enabled.
 
 There is no test framework configured. No test runner or test files exist.
 
@@ -23,11 +23,9 @@ bunx tsc --noEmit
 app/
   favicon.ico
   globals.css
-  jbox-preview/
-    auth/
-      page.tsx
+  design-system/
+    page.tsx
   layout.tsx
-  page.tsx
 components/
   providers/
     query-provider.tsx
@@ -46,8 +44,9 @@ messages/
 
 ## Routing Baseline
 
-- The active App Router entrypoints are `app/layout.tsx` and `app/page.tsx`.
-- `app/page.tsx` currently returns `null` on purpose. This is the minimum passing App Router setup for this boilerplate.
+- The active App Router entrypoints are `app/layout.tsx` and `app/design-system/page.tsx`.
+- `app/design-system/page.tsx` currently returns `null` on purpose. This is the minimum default page for this boilerplate.
+- There is no root `app/page.tsx` by default.
 - There is no active `proxy.ts`.
 - There is no active `[locale]` route segment.
 - If you add routing back, keep the root layout as the owner of `<html>` and `<body>`.
@@ -58,6 +57,7 @@ messages/
 
 - `i18n/` and `messages/` still exist, but locale routing is not active.
 - `components/providers/query-provider.tsx` and `lib/query-client.ts` still exist, but React Query is not mounted in the root layout.
+- `@supabase/supabase-js` and `@supabase/ssr` are installed for Supabase work, but no Supabase client is instantiated until the generated app needs it.
 - Keep this distinction clear: installed code or helper files do not imply active runtime behavior.
 
 ## Code Style
