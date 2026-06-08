@@ -57,8 +57,10 @@ messages/
 
 - `i18n/` and `messages/` still exist, but locale routing is not active.
 - `components/providers/query-provider.tsx` and `lib/query-client.ts` still exist, but React Query is not mounted in the root layout.
-- `@supabase/supabase-js` and `@supabase/ssr` are installed for Supabase work, but no Supabase client is instantiated until the generated app needs it.
+- `@supabase/supabase-js` and `@supabase/ssr` are installed for Supabase work. Supabase helpers exist under `lib/supabase/`, but no Supabase client is instantiated until the generated app imports one of those helpers.
 - Keep this distinction clear: installed code or helper files do not imply active runtime behavior.
+- For Supabase app code, import the helpers from `@/lib/supabase/*` instead of reading env variables directly. The helpers support both JBOX public-key aliases: prefer `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, with `NEXT_PUBLIC_SUPABASE_ANON_KEY` accepted for compatibility.
+- Do not create Supabase clients at module scope in page files or shared UI components. Use `getSupabaseBrowserClient()` in client components, `createSupabaseServerClient()` in server code, or `getSupabasePublicEnv()` when the route can render without Supabase.
 
 ## Code Style
 
@@ -114,6 +116,7 @@ bunx shadcn add <component-name>
 | `lucide-react` | Icons |
 | `tw-animate-css` | Tailwind animation utilities |
 | `framer-motion` | Client-side animation when needed |
+| `@supabase/ssr` + `@supabase/supabase-js` | Optional Supabase clients via `lib/supabase/` helpers |
 
 ## React Query And i18n Guidance
 
