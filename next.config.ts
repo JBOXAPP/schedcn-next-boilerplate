@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   // Allow preview subdomains for Keystone preview system
   allowedDevOrigins: [
     "preview.localhost",

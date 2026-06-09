@@ -11,11 +11,11 @@ There is no test framework configured. No test runner or test files exist.
 ## Build And Type Check
 
 ```bash
-bun run build
-bunx tsc --noEmit
+pnpm run build
+pnpm exec tsc --noEmit
 ```
 
-`npm run build` also works, but the repo is currently set up around `bun.lock`.
+The repo is set up around `pnpm-lock.yaml`. Use pnpm for installs, package changes, scripts, and one-off package CLIs.
 
 ## Current App Structure
 
